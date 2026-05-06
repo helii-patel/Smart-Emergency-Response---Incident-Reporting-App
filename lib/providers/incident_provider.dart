@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../models/incident.dart';
 import '../services/local_storage_service.dart';
 

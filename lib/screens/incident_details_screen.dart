@@ -36,8 +36,8 @@ class _IncidentDetailsScreenState extends State<IncidentDetailsScreen> {
   Widget build(BuildContext context) {
     return Consumer<IncidentProvider>(
       builder: (context, provider, child) {
-        final incident = provider.allIncidents
-            .firstWhere((i) => i.id == widget.incidentId, orElse: () => null as dynamic);
+        final matches = provider.allIncidents.where((i) => i.id == widget.incidentId).toList();
+        final incident = matches.isEmpty ? null : matches.first;
 
         if (incident == null) {
           return Scaffold(

@@ -36,7 +36,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -72,6 +72,31 @@ class AppTheme {
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  static ThemeData getDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      useMaterial3: true,
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor: const Color(0xFF0F1724),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF0B3A5E),
+        foregroundColor: Colors.white,
+        elevation: 4,
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF12202B),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFF0B3A5E),
         foregroundColor: Colors.white,
       ),
     );

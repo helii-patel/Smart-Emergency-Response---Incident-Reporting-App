@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_filter_screen.dart';
 import 'providers/incident_provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/role_provider.dart';
 import 'services/local_storage_service.dart';
 import 'utils/app_theme.dart';
 
@@ -20,13 +22,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => IncidentProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => RoleProvider()),
       ],
-      child: MaterialApp(
-        title: 'Emergency Response App',
-        theme: AppTheme.getThemeData(),
-        home: const MainNavigationScreen(),
-        debugShowCheckedModeBanner: false,
-      ),
+      child: Consumer<ThemeProvider>(builder: (context, theme, child) {
+        return MaterialApp(
+          title: 'Emergency Response App',
+          theme: AppTheme.getThemeData(),
+          darkTheme: AppTheme.getDarkTheme(),
+          themeMode: theme.mode,
+          home: const MainNavigationScreen(),
+          debugShowCheckedModeBanner: false,
+        );
+      }),
     );
   }
 }

@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/incident.dart';
 import '../providers/incident_provider.dart';
+import '../providers/theme_provider.dart';
+import '../providers/role_provider.dart';
 import '../utils/app_theme.dart';
 import 'incident_details_screen.dart';
 import 'incident_reporting_screen.dart';
+import 'admin_panel_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -42,6 +45,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             Tab(text: 'Dashboard'),
           ],
         ),
+        actions: [
+          Consumer<ThemeProvider>(builder: (context, theme, child) {
+            return IconButton(
+              tooltip: theme.isDark ? 'Switch to light' : 'Switch to dark',
+              icon: Icon(theme.isDark ? Icons.wb_sunny : Icons.nights_stay),
+              onPressed: () => theme.toggle(),
+            );
+          }),
+          Consumer<RoleProvider>(builder: (context, role, child) {
+            return IconButton(
+              tooltip: role.isAdmin ? 'Switch to user' : 'Switch to admin',
+              icon: Icon(role.isAdmin ? Icons.admin_panel_settings : Icons.person),
+              onPressed: () => role.toggleRole(),
+            );
+          }),
+        ],
       ),
       body: TabBarView(
         controller: _tabController,
@@ -68,6 +87,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget _buildIncidentsTab(BuildContext context) {
     return Consumer<IncidentProvider>(
       builder: (context, provider, child) {
+        final isAdmin = context.watch<RoleProvider>().isAdmin;
+        // Admin banner
+        if (isAdmin && provider.incidents.isNotEmpty) {
+          // small visual indicator at top of list
+        }
         if (provider.incidents.isEmpty) {
           return Center(
             child: Column(
@@ -84,6 +108,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   'Tap the button below to report an incident',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                const SizedBox(height: 12),
+                Consumer<RoleProvider>(builder: (context, role, child) {
+                  if (role.isAdmin) {
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminPanelScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.admin_panel_settings),
+                      label: const Text('Open Admin Panel'),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
               ],
             ),
           );
