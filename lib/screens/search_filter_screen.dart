@@ -41,10 +41,10 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
               // Search Bar
               Container(
                 padding: const EdgeInsets.all(16),
-                color: Colors.white,
                 child: TextField(
                   controller: _searchController,
                   onChanged: (value) {
+                    setState(() {});
                     provider.setSearchQuery(value);
                   },
                   decoration: InputDecoration(
@@ -77,7 +77,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                       onSelected: (selected) {
                         if (selected) provider.setStatusFilter(null);
                       },
-                      selected: context.watch<IncidentProvider>() is IncidentProvider,
+                      selected: provider.statusFilter == null,
                     ),
                     const SizedBox(width: 8),
                     ...IncidentStatus.values.map((status) {
@@ -113,6 +113,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                       onSelected: (selected) {
                         if (selected) provider.setPriorityFilter(null);
                       },
+                      selected: provider.priorityFilter == null,
                     ),
                     const SizedBox(width: 8),
                     ...IncidentPriority.values.map((priority) {
@@ -148,6 +149,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                       onSelected: (selected) {
                         if (selected) provider.setCategoryFilter(null);
                       },
+                      selected: provider.categoryFilter == null,
                     ),
                     const SizedBox(width: 8),
                     ...IncidentCategory.values.map((category) {

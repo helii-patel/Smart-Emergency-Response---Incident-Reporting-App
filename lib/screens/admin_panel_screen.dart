@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/incident.dart';
 import '../providers/incident_provider.dart';
+import '../providers/role_provider.dart';
 import '../utils/app_theme.dart';
 
 class AdminPanelScreen extends StatelessWidget {
@@ -9,6 +10,25 @@ class AdminPanelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAdmin = context.watch<RoleProvider>().isAdmin;
+
+    if (!isAdmin) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Admin Panel'),
+        ),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'Admin access required. Use the authentication screen to sign in as an admin.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Panel'),

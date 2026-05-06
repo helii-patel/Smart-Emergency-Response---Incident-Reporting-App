@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/home_screen.dart';
-import 'screens/search_filter_screen.dart';
+import 'screens/app_shell_screen.dart';
+import 'screens/auth_screen.dart';
 import 'providers/incident_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/role_provider.dart';
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.getThemeData(),
           darkTheme: AppTheme.getDarkTheme(),
           themeMode: theme.mode,
-          home: const MainNavigationScreen(),
+          home: const AppEntryPoint(),
           debugShowCheckedModeBanner: false,
         );
       }),
@@ -39,49 +39,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({Key? key}) : super(key: key);
-
-  @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
-}
-
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 0;
-
-  late List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-    _screens = [
-      const HomeScreen(),
-      const SearchFilterScreen(),
-    ];
-  }
+class AppEntryPoint extends StatelessWidget {
+  const AppEntryPoint({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-        ],
-      ),
+    return Consumer<RoleProvider>(
+      builder: (context, role, child) {
+        if (!role.isAuthenticated) {
+          return const AuthScreen();
+        }
+
+        return const AppShellScreen();
+      },
     );
   }
 }

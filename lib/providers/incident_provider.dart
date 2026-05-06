@@ -22,6 +22,10 @@ class IncidentProvider extends ChangeNotifier {
       _incidents.where((i) => i.statusEnum != IncidentStatus.resolved).length;
   int get resolvedIncidents =>
       _incidents.where((i) => i.statusEnum == IncidentStatus.resolved).length;
+  IncidentStatus? get statusFilter => _statusFilter;
+  IncidentPriority? get priorityFilter => _priorityFilter;
+  IncidentCategory? get categoryFilter => _categoryFilter;
+  String get searchQuery => _searchQuery;
 
   // Load incidents from local storage
   void _loadIncidents() {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../models/incident.dart';
 import '../providers/incident_provider.dart';
+import '../providers/role_provider.dart';
 import '../utils/app_theme.dart';
 
 class IncidentDetailsScreen extends StatefulWidget {
@@ -36,6 +38,7 @@ class _IncidentDetailsScreenState extends State<IncidentDetailsScreen> {
   Widget build(BuildContext context) {
     return Consumer<IncidentProvider>(
       builder: (context, provider, child) {
+        final isAdmin = context.watch<RoleProvider>().isAdmin;
         final matches = provider.allIncidents.where((i) => i.id == widget.incidentId).toList();
         final incident = matches.isEmpty ? null : matches.first;
 
@@ -52,14 +55,25 @@ class _IncidentDetailsScreenState extends State<IncidentDetailsScreen> {
           appBar: AppBar(
             title: const Text('Incident Details'),
             actions: [
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    child: const Text('Delete'),
-                    onTap: () => _showDeleteConfirmation(context, provider, incident),
-                  ),
-                ],
+              IconButton(
+                tooltip: 'Copy full ID',
+                icon: const Icon(Icons.copy),
+                onPressed: incident == null
+                    ? null
+                    : () {
+                        Clipboard.setData(ClipboardData(text: incident.id));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incident ID copied')));
+                      },
               ),
+              if (isAdmin)
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: const Text('Delete'),
+                      onTap: () => _showDeleteConfirmation(context, provider, incident),
+                    ),
+                  ],
+                ),
             ],
           ),
           body: SingleChildScrollView(
@@ -238,37 +252,47 @@ class _IncidentDetailsScreenState extends State<IncidentDetailsScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Admin Controls (for editing)
-                _buildSection(
-                  context,
-                  'Admin Controls',
-                  [
-                    TextField(
-                      controller: _responderController,
-                      decoration: InputDecoration(
-                        labelText: 'Assigned Responder',
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => _updateResponder(context, provider, incident),
-                            child: const Text('Assign Responder'),
+                if (isAdmin) ...[
+                  _buildSection(
+                    context,
+                    'Admin Controls',
+                    [
+                      TextField(
+                        controller: _responderController,
+                        decoration: InputDecoration(
+                          labelText: 'Assigned Responder',
+                          prefixIcon: const Icon(Icons.person),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ..._buildStatusUpdateButtons(context, provider, incident),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => _updateResponder(context, provider, incident),
+                              child: const Text('Assign Responder'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      ..._buildStatusUpdateButtons(context, provider, incident),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                ] else ...[
+                  _buildSection(
+                    context,
+                    'Access Level',
+                    const [
+                      Text('You can view incident status and details. Admin actions are restricted.'),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                ],
 
                 // Sync Status
                 if (!incident.isSynced)
